@@ -2,10 +2,16 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f4f6f8;
     padding: 40px;
+    margin: 0;
 }
 
 h1 {
     text-align: center;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .container {
@@ -13,6 +19,8 @@ h1 {
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    max-width: 500px;
+    margin: 40px auto;
 }
 
 .book-card {
@@ -21,6 +29,11 @@ h1 {
     margin-bottom: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.book-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
 }
 
 .status {
@@ -43,13 +56,81 @@ h1 {
     color: white;
     text-decoration: none;
     border-radius: 4px;
+    transition: 0.3s;
 }
 
 .button:hover {
     background: #1a5ec8;
 }
 
-.book-item {
-    padding: 8px 0;
-    border-bottom: 1px solid #ddd;
+form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+form input {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    width: 100%;
+    transition: 0.3s;
+}
+
+form input:focus {
+    outline: none;
+    border-color: #2c7be5;
+    box-shadow: 0 0 4px rgba(44,123,229,0.4);
+}
+
+form button {
+    padding: 10px;
+    background: #2c7be5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+    width: 100%;
+}
+
+form button:hover {
+    background: #1a5ec8;
+}
+
+.container p {
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.container strong {
+    color: #333;
+}
+
+/* Logout button */
+form[action="/logout"] button {
+    background: #dc3545;
+}
+
+form[action="/logout"] button:hover {
+    background: #b02a37;
+}
+
+.container a {
+    color: #2c7be5;
+    text-decoration: none;
+}
+
+.container a:hover {
+    text-decoration: underline;
+}
+
+.error {
+    margin-top: 10px;
+    text-align: center;
+    color: red;
+    font-size: 13px;
 }
