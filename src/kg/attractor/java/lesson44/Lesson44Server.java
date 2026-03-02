@@ -1,6 +1,7 @@
 package kg.attractor.java.lesson44;
 
 import kg.attractor.java.lesson44.controller.AuthController;
+import kg.attractor.java.lesson44.controller.BookController;
 import kg.attractor.java.lesson44.service.UserService;
 import kg.attractor.java.server.BasicServer;
 
@@ -10,6 +11,7 @@ public class Lesson44Server extends BasicServer {
 
     private final UserService userService = new UserService();
     private final AuthController authController = new AuthController(userService);
+    private final BookController bookController = new BookController(userService);
 
     public Lesson44Server(String host, int port) throws IOException {
         super(host, port);
@@ -21,5 +23,11 @@ public class Lesson44Server extends BasicServer {
         registerPost("/login", ex -> authController.loginPost(this, ex));
 
         registerGet("/profile", ex -> authController.profileGet(this, ex));
+        registerGet("/logout", ex -> authController.logout(this, ex));
+
+        registerGet("/books", ex -> bookController.booksGet(this, ex));
+        registerGet("/book", ex -> bookController.bookGet(this, ex));
+        registerGet("/issue", ex -> bookController.issue(this, ex));
+        registerGet("/return", ex -> bookController.returnBook(this, ex));
     }
 }

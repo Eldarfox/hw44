@@ -15,6 +15,9 @@ public class Book {
         this.status = status;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
     public int getId() { return id; }
     public String getTitle() { return title; }
     public String getAuthor() { return author; }

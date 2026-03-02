@@ -19,7 +19,11 @@
             Статус: ${book.status}
         </p>
 
-        <a class="button" href="/book">Подробнее</a>
+        <a href="/book?id=${book.id}">Подробнее</a>
+        <#if book.status == "AVAILABLE">
+            <a href="/issue?bookId=${book.id}">Взять книгу</a>
+        </#if>
+        <a href="/profile">← Назад в профиль</a>
     </div>
 </#list>
 

@@ -9,6 +9,8 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import freemarker.template.*;
+import kg.attractor.java.lesson44.models.User;
+import kg.attractor.java.lesson44.service.UserService;
 
 public abstract class BasicServer {
 
@@ -114,7 +116,7 @@ public abstract class BasicServer {
         server.createContext("/", this::handleIncomingServerRequests);
 
         registerGet("/", exchange ->
-                sendFile(exchange, makeFilePath("index.html"), ContentType.TEXT_HTML)
+                redirect303(exchange, "/login")
         );
 
         registerFileHandler(".css", ContentType.TEXT_CSS);
@@ -191,5 +193,31 @@ public abstract class BasicServer {
 
     public final void start() {
         server.start();
+    }
+
+    public String getCookies(HttpExchange exchange) {
+        return exchange.getRequestHeaders()
+                .getOrDefault("Cookie", List.of(""))
+                .get(0);
+    }
+
+    public void setCookie(HttpExchange exchange, String cookie) {
+        exchange.getResponseHeaders().add("Set-Cookie", cookie);
+    }
+    public User getAuthorizedUser(HttpExchange exchange, UserService userService) {
+
+        String raw = getCookies(exchange);
+        if (raw == null || raw.isEmpty()) return null;
+
+        String[] parts = raw.split(";");
+
+        for (String part : parts) {
+            if (part.trim().startsWith("SESSION_ID=")) {
+                String sessionId = part.split("=")[1];
+                return userService.getUserBySession(sessionId);
+            }
+        }
+
+        return null;
     }
 }

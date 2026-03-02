@@ -13,7 +13,6 @@ import java.util.Map;
 public class AuthController {
 
     private final UserService userService;
-    private User currentUser;
 
     public AuthController(UserService userService) {
         this.userService = userService;
@@ -65,22 +64,53 @@ public class AuthController {
             return;
         }
 
-        currentUser = user;
+        String sessionId = userService.createSession(user);
+
+        String cookie = "SESSION_ID=" + sessionId +
+                "; Max-Age=600; HttpOnly; Path=/";
+
+        server.setCookie(exchange, cookie);
+
         server.redirect303(exchange, "/profile");
     }
 
     public void profileGet(BasicServer server, HttpExchange exchange) throws IOException {
 
-        Map<String, Object> model = new HashMap<>();
+        User user = server.getAuthorizedUser(exchange, userService);
 
-        if (currentUser == null) {
-            model.put("name", "Некий пользователь");
-            model.put("email", "unknown@mail.com");
-        } else {
-            model.put("name", currentUser.getName());
-            model.put("email", currentUser.getEmail());
+        if (user == null) {
+            server.redirect303(exchange, "/login");
+            return;
         }
 
+        Map<String, Object> model = new HashMap<>();
+        model.put("user", user);
+
         server.renderTemplate(exchange, "profile.ftl", model);
+    }
+
+    public void logout(BasicServer server, HttpExchange exchange) throws IOException {
+
+        User user = server.getAuthorizedUser(exchange, userService);
+
+        if (user != null) {
+            String raw = server.getCookies(exchange);
+
+            if (raw != null) {
+                String[] parts = raw.split(";");
+
+                for (String part : parts) {
+                    if (part.trim().startsWith("SESSION_ID=")) {
+                        String sessionId = part.split("=")[1];
+                        userService.removeSession(sessionId);
+                    }
+                }
+            }
+        }
+
+        server.setCookie(exchange,
+                "SESSION_ID=; Max-Age=0; HttpOnly; Path=/");
+
+        server.redirect303(exchange, "/login");
     }
 }
