@@ -11,6 +11,7 @@
 
 <#list books as book>
     <div class="book-card">
+        <img src="/images/${book.image}" width="120">
         <h2>${book.title}</h2>
         <p><strong>Автор:</strong> ${book.author}</p>
 

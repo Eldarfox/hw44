@@ -2,8 +2,8 @@ package kg.attractor.java.lesson44.controller;
 
 import com.sun.net.httpserver.HttpExchange;
 import kg.attractor.java.lesson44.ParseUrlEncoded;
-import kg.attractor.java.lesson44.models.User;
-import kg.attractor.java.lesson44.service.UserService;
+import kg.attractor.java.lesson44.models.Employee;
+import kg.attractor.java.lesson44.service.EmployeeService;
 import kg.attractor.java.server.BasicServer;
 
 import java.io.IOException;
@@ -12,10 +12,10 @@ import java.util.Map;
 
 public class AuthController {
 
-    private final UserService userService;
+    private final EmployeeService employeeService;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
+    public AuthController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
     public void registerGet(BasicServer server, HttpExchange exchange) throws IOException {
@@ -27,15 +27,21 @@ public class AuthController {
         String raw = server.getBody(exchange);
         Map<String, String> data = ParseUrlEncoded.parse(raw, "&");
 
-        boolean success = userService.register(
-                data.get("email"),
+        Employee employee = new Employee(
+                employeeService.getNextId(),
                 data.get("name"),
+                "",
+                data.get("email"),
                 data.get("password")
         );
 
+        boolean success = employeeService.register(employee);
+
         if (!success) {
+
             Map<String, Object> model = new HashMap<>();
             model.put("error", "Пользователь уже существует");
+
             server.renderTemplate(exchange, "register.ftl", model);
             return;
         }
@@ -52,19 +58,21 @@ public class AuthController {
         String raw = server.getBody(exchange);
         Map<String, String> data = ParseUrlEncoded.parse(raw, "&");
 
-        User user = userService.login(
+        Employee employee = employeeService.login(
                 data.get("email"),
                 data.get("password")
         );
 
-        if (user == null) {
+        if (employee == null) {
+
             Map<String, Object> model = new HashMap<>();
             model.put("error", "Неверный email или пароль");
+
             server.renderTemplate(exchange, "login.ftl", model);
             return;
         }
 
-        String sessionId = userService.createSession(user);
+        String sessionId = employeeService.createSession(employee);
 
         String cookie = "SESSION_ID=" + sessionId +
                 "; Max-Age=600; HttpOnly; Path=/";
@@ -76,34 +84,34 @@ public class AuthController {
 
     public void profileGet(BasicServer server, HttpExchange exchange) throws IOException {
 
-        User user = server.getAuthorizedUser(exchange, userService);
+        Employee employee = server.getAuthorizedUser(exchange, employeeService);
 
-        if (user == null) {
+        if (employee == null) {
             server.redirect303(exchange, "/login");
             return;
         }
 
         Map<String, Object> model = new HashMap<>();
-        model.put("user", user);
+        model.put("employee", employee);
 
         server.renderTemplate(exchange, "profile.ftl", model);
     }
 
     public void logout(BasicServer server, HttpExchange exchange) throws IOException {
 
-        User user = server.getAuthorizedUser(exchange, userService);
+        String raw = server.getCookies(exchange);
 
-        if (user != null) {
-            String raw = server.getCookies(exchange);
+        if (raw != null) {
 
-            if (raw != null) {
-                String[] parts = raw.split(";");
+            String[] parts = raw.split(";");
 
-                for (String part : parts) {
-                    if (part.trim().startsWith("SESSION_ID=")) {
-                        String sessionId = part.split("=")[1];
-                        userService.removeSession(sessionId);
-                    }
+            for (String part : parts) {
+
+                if (part.trim().startsWith("SESSION_ID=")) {
+
+                    String sessionId = part.split("=")[1];
+                    employeeService.removeSession(sessionId);
+
                 }
             }
         }

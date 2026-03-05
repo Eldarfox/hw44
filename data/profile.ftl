@@ -9,16 +9,15 @@
 
 <div class="container">
     <h2>Профиль</h2>
+    <p><strong>Имя:</strong> ${employee.firstName}</p>
+    <p><strong>Email:</strong> ${employee.email}</p>
 
-    <p><strong>Имя:</strong> ${user.name}</p>
-    <p><strong>Email:</strong> ${user.email}</p>
+    <h3>Книги на руках</h3>
 
-    <h3>Мои книги</h3>
-
-    <#if user.issuedBooks?size == 0>
-        <p>У вас нет книг</p>
+    <#if employee.issuedBooks?size == 0>
+        <p>У вас нет книг на руках</p>
     <#else>
-        <#list user.issuedBooks as book>
+        <#list employee.issuedBooks as book>
             <div>
                 ${book.title}
                 <a href="/return?bookId=${book.id}">Вернуть</a>
@@ -27,7 +26,21 @@
     </#if>
 
     <hr>
-    <a href="/books"> К библиотеке</a>
+
+    <h3>Книги которые вы брали</h3>
+
+    <#if employee.historyBooks?size == 0>
+        <p>Вы ещё не брали книги</p>
+    <#else>
+        <#list employee.historyBooks as book>
+            <div>
+                ${book.title}
+            </div>
+        </#list>
+    </#if>
+
+    <hr>
+    <a href="/books">К библиотеке</a>
     <br><br>
     <a href="/logout">Выйти</a>
 </div>

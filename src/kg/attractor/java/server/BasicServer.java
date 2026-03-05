@@ -9,8 +9,8 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import freemarker.template.*;
-import kg.attractor.java.lesson44.models.User;
-import kg.attractor.java.lesson44.service.UserService;
+import kg.attractor.java.lesson44.models.Employee;
+import kg.attractor.java.lesson44.service.EmployeeService;
 
 public abstract class BasicServer {
 
@@ -204,8 +204,7 @@ public abstract class BasicServer {
     public void setCookie(HttpExchange exchange, String cookie) {
         exchange.getResponseHeaders().add("Set-Cookie", cookie);
     }
-    public User getAuthorizedUser(HttpExchange exchange, UserService userService) {
-
+    public Employee getAuthorizedUser(HttpExchange exchange, EmployeeService userService) {
         String raw = getCookies(exchange);
         if (raw == null || raw.isEmpty()) return null;
 
@@ -217,7 +216,6 @@ public abstract class BasicServer {
                 return userService.getUserBySession(sessionId);
             }
         }
-
         return null;
     }
 }

@@ -10,6 +10,8 @@
 <div class="container">
     <h1>${book.title}</h1>
 
+    <img src="/images/${book.image}" width="200">
+
     <p><strong>Автор:</strong> ${book.author}</p>
 
     <p>
